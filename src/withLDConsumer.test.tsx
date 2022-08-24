@@ -20,11 +20,17 @@ jest.mock('./context', () => {
 
 import * as React from 'react';
 import { create } from 'react-test-renderer';
-import withLDConsumer from './withLDConsumer';
+import withLDConsumer, { LDProps } from './withLDConsumer';
 
 describe('withLDConsumer', () => {
+  interface HomeProps extends Pick<LDProps, 'ldClient'> {
+    flags: {
+      testFlag: boolean;
+    };
+  }
+
   test('flags are passed down through context api', () => {
-    const Home = (props: HocProps) => (
+    const Home = (props: HomeProps) => (
       <div>{props.flags && props.flags.testFlag ? 'testFlag detected' : 'Negative, no flag'}</div>
     );
     const HomeWithFlags = withLDConsumer()(Home);
@@ -33,14 +39,14 @@ describe('withLDConsumer', () => {
   });
 
   test('ldClient is passed down through context api', () => {
-    const Home = (props: HocProps) => <div>{props.ldClient ? 'ldClient detected' : 'Negative, no ldClient'}</div>;
+    const Home = (props: HomeProps) => <div>{props.ldClient ? 'ldClient detected' : 'Negative, no ldClient'}</div>;
     const HomeWithFlags = withLDConsumer()(Home);
     const component = create(<HomeWithFlags />);
     expect(component).toMatchSnapshot();
   });
 
   test('only ldClient is passed down through context api', () => {
-    const Home = (props: HocProps) => (
+    const Home = (props: HomeProps) => (
       <div>
         {props.flags ? 'flags detected' : 'Negative, no flag'}
         {props.ldClient ? 'ldClient detected' : 'Negative, no ldClient'}

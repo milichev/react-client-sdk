@@ -41,15 +41,15 @@ export interface LDProps {
  * @return A HOC with flags and the `ldClient` instance injected via props
  */
 function withLDConsumer(options: ConsumerOptions = { clientOnly: false }) {
-  return function withLDConsumerHoc<P>(WrappedComponent: React.ComponentType<P & LDProps>) {
-    return (props: P) => (
+  return function withLDConsumerHoc<P extends LDProps>(WrappedComponent: React.ComponentType<P>) {
+    return (props: Omit<P, keyof LDProps>) => (
       <Consumer>
         {({ flags, ldClient }: LDContext) => {
           if (options.clientOnly) {
-            return <WrappedComponent ldClient={ldClient} {...props} />;
+            return <WrappedComponent ldClient={ldClient} {...(props as P)} />;
           }
 
-          return <WrappedComponent flags={flags} ldClient={ldClient} {...props} />;
+          return <WrappedComponent flags={flags} ldClient={ldClient} {...(props as P)} />;
         }}
       </Consumer>
     );
